@@ -1,0 +1,16 @@
+services:
+  main-db:
+    image: mysql:8
+    container_name: payment_main_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: payment_db
+      MYSQL_USER: payment_user
+      MYSQL_PASSWORD: '123654'
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - ./data/db:/var/lib/mysql
