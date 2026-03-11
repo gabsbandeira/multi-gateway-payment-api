@@ -25,7 +25,7 @@ export default class extends BaseSchema {
 
       table.string('external_id', 255).nullable()
       table.string('status', 50).notNullable()
-      table.decimal('amount', 10, 2).notNullable()
+      table.integer('amount').notNullable()
       table.string('card_last_numbers', 4).nullable()
       table.timestamp('created_at')
       table.timestamp('updated_at')

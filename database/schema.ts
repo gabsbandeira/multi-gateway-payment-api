@@ -68,7 +68,7 @@ export class ProductSchema extends BaseModel {
   static $columns = ['amount', 'createdAt', 'id', 'name', 'updatedAt'] as const
   $columns = ProductSchema.$columns
   @column()
-  declare amount: string
+  declare amount: number
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
   @column({ isPrimary: true })
@@ -83,7 +83,7 @@ export class TransactionSchema extends BaseModel {
   static $columns = ['amount', 'cardLastNumbers', 'clientId', 'createdAt', 'externalId', 'gatewayId', 'id', 'status', 'updatedAt'] as const
   $columns = TransactionSchema.$columns
   @column()
-  declare amount: string
+  declare amount: number
   @column()
   declare cardLastNumbers: string | null
   @column()
