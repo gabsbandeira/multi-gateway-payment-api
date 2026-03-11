@@ -19,19 +19,33 @@ router
   .group(() => {
     router
       .group(() => {
-        router.post('signup', [controllers.NewAccount, 'store'])
-        router.post('login', [controllers.AccessToken, 'store'])
-        router.post('logout', [controllers.AccessToken, 'destroy']).use(middleware.auth())
+        router.post('signup', [controllers.Signup, 'store'])
+        router.post('login', [controllers.Login, 'store'])
+        router.post('logout', [controllers.Login, 'destroy']).use(middleware.auth())
       })
       .prefix('auth')
       .as('auth')
 
     router
       .group(() => {
-        router.get('/profile', [controllers.Profile, 'show'])
+        router.get('/', [controllers.Clients, 'index'])
+        router.get('/:id', [controllers.Clients, 'show'])
+        router.post('/', [controllers.Clients, 'store'])
+        router.put('/:id', [controllers.Clients, 'update'])
+        router.delete('/:id', [controllers.Clients, 'destroy'])
       })
-      .prefix('account')
-      .as('profile')
+      .prefix('clients')
+      .use(middleware.auth())
+
+    router
+      .group(() => {
+        router.get('/', [controllers.Products, 'index'])
+        router.get('/:id', [controllers.Products, 'show'])
+        router.post('/', [controllers.Products, 'store'])
+        router.put('/:id', [controllers.Products, 'update'])
+        router.delete('/:id', [controllers.Products, 'destroy'])
+      })
+      .prefix('products')
       .use(middleware.auth())
   })
   .prefix('/api/v1')
