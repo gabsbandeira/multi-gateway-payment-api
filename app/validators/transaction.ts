@@ -13,7 +13,7 @@ export const createTransactionValidator = vine.create({
     .array(
       vine.object({
         productId: vine.number().positive().exists({ table: 'products', column: 'id' }),
-        quantity: vine.number().positive(),
+        quantity: vine.number().positive().withoutDecimals(),
       })
     )
     .minLength(1),

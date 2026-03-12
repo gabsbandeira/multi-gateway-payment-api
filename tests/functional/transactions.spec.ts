@@ -66,6 +66,28 @@ test.group('Transactions', (group) => {
     assert.equal(body.data.products[0].quantity, 1)
   })
 
+  test('Deve falhar e não criar a transação quando um produto for inválido', async ({
+    client,
+    assert,
+  }) => {
+    const response = await client
+      .post('/api/v1/transactions')
+      .json({
+        clientId,
+        amount: 100,
+        products: [
+          { productId, quantity: 1 },
+          { productId: 999999, quantity: 1 },
+        ],
+      })
+      .header('Authorization', `Bearer ${token}`)
+
+    response.assertStatus(422)
+
+    const transactions = await Transaction.query().where('clientId', clientId)
+    assert.equal(transactions.length, 0)
+  })
+
   test('Deve criar uma transação com múltiplos produtos', async ({ client, assert }) => {
     const product2 = await Product.create({ name: 'Produto 2', amount: 200 })
 

@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Transaction from '#models/transaction'
 import { transactionIdValidator, createTransactionValidator } from '#validators/transaction'
+import db from '@adonisjs/lucid/services/db'
 
 export default class TransactionsController {
   async index({ response }: HttpContext) {
@@ -54,43 +55,41 @@ export default class TransactionsController {
   }
 
   async store({ request, response }: HttpContext) {
-    try {
-      const { products, ...payload } = await request.validateUsing(createTransactionValidator)
+    const { products, ...payload } = await request.validateUsing(createTransactionValidator)
 
-      // TODO: substituir pelo service real de gateways
-      const status = 'paid'
+    // TODO: substituir quando implementar os gateways
+    const status = 'paid' as const
 
-      const transaction = await Transaction.create({ ...payload, status })
+    const transactionWithProducts = await db.transaction(async (trx) => {
+      const transactionRecord = await Transaction.create({ ...payload, status }, { client: trx })
 
       await Promise.all(
         products.map((item) =>
-          transaction.related('transactionProducts').create({
-            productId: item.productId,
-            quantity: item.quantity,
-          })
+          transactionRecord
+            .related('transactionProducts')
+            .create({ productId: item.productId, quantity: item.quantity }, { client: trx })
         )
       )
 
-      await transaction.load('transactionProducts')
+      return transactionRecord
+    })
 
-      return response.created({
-        message: 'Transação criada com sucesso',
-        data: {
-          id: transaction.id,
-          status: transaction.status,
-          amount: transaction.amount,
-          clientId: transaction.clientId,
-          createdAt: transaction.createdAt?.toISO(),
-          products: transaction.transactionProducts.map((tp) => ({
-            productId: tp.productId,
-            quantity: tp.quantity,
-          })),
-        },
-      })
-    } catch (error) {
-      console.log('Erro ao criar transação:', error)
-      throw error
-    }
+    await transactionWithProducts.load('transactionProducts')
+
+    return response.created({
+      message: 'Transação criada com sucesso',
+      data: {
+        id: transactionWithProducts.id,
+        status: transactionWithProducts.status,
+        amount: transactionWithProducts.amount,
+        clientId: transactionWithProducts.clientId,
+        createdAt: transactionWithProducts.createdAt?.toISO(),
+        products: transactionWithProducts.transactionProducts.map((tp) => ({
+          productId: tp.productId,
+          quantity: tp.quantity,
+        })),
+      },
+    })
   }
 
   async destroy({ params, request, response }: HttpContext) {

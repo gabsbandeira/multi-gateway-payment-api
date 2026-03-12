@@ -21,6 +21,7 @@ yarn-error.log
 .fleet
 .idea
 .vscode
+.claude
 
 # Local database files
 data/db
