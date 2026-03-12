@@ -47,5 +47,15 @@ router
       })
       .prefix('products')
       .use(middleware.auth())
+
+    router
+      .group(() => {
+        router.get('/', [controllers.Transactions, 'index'])
+        router.get('/:id', [controllers.Transactions, 'show'])
+        router.post('/', [controllers.Transactions, 'store'])
+        router.delete('/:id', [controllers.Transactions, 'destroy'])
+      })
+      .prefix('transactions')
+      .use(middleware.auth())
   })
   .prefix('/api/v1')
