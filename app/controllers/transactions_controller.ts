@@ -1,7 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import Transaction from '#models/transaction'
-import { transactionIdValidator, createTransactionValidator } from '#validators/transaction'
 import db from '@adonisjs/lucid/services/db'
+import Transaction from '#models/transaction'
+import Product from '#models/product'
+import { transactionIdValidator, createTransactionValidator } from '#validators/transaction'
 
 export default class TransactionsController {
   async index({ response }: HttpContext) {
@@ -57,11 +58,21 @@ export default class TransactionsController {
   async store({ request, response }: HttpContext) {
     const { products, ...payload } = await request.validateUsing(createTransactionValidator)
 
+    const productsWithPrice = await Product.findMany(products.map((p) => p.productId))
+
+    const amount = products.reduce((sum, item) => {
+      const matchedProduct = productsWithPrice.find((p) => p.id === item.productId)!
+      return sum + matchedProduct.amount * item.quantity
+    }, 0)
+
     // TODO: substituir quando implementar os gateways
     const status = 'paid' as const
 
-    const transactionWithProducts = await db.transaction(async (trx) => {
-      const transactionRecord = await Transaction.create({ ...payload, status }, { client: trx })
+    const newTransaction = await db.transaction(async (trx) => {
+      const transactionRecord = await Transaction.create(
+        { ...payload, amount, status },
+        { client: trx }
+      )
 
       await Promise.all(
         products.map((item) =>
@@ -74,17 +85,17 @@ export default class TransactionsController {
       return transactionRecord
     })
 
-    await transactionWithProducts.load('transactionProducts')
+    await newTransaction.load('transactionProducts')
 
     return response.created({
       message: 'Transação criada com sucesso',
       data: {
-        id: transactionWithProducts.id,
-        status: transactionWithProducts.status,
-        amount: transactionWithProducts.amount,
-        clientId: transactionWithProducts.clientId,
-        createdAt: transactionWithProducts.createdAt?.toISO(),
-        products: transactionWithProducts.transactionProducts.map((tp) => ({
+        id: newTransaction.id,
+        status: newTransaction.status,
+        amount: newTransaction.amount,
+        clientId: newTransaction.clientId,
+        createdAt: newTransaction.createdAt?.toISO(),
+        products: newTransaction.transactionProducts.map((tp) => ({
           productId: tp.productId,
           quantity: tp.quantity,
         })),

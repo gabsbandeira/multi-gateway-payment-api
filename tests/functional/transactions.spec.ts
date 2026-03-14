@@ -37,7 +37,6 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
-        amount: 100,
         products: [{ productId, quantity: 1 }],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -74,7 +73,6 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
-        amount: 100,
         products: [
           { productId, quantity: 1 },
           { productId: 999999, quantity: 1 },
@@ -95,7 +93,6 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
-        amount: 300,
         products: [
           { productId, quantity: 1 },
           { productId: product2.id, quantity: 2 },
@@ -117,7 +114,6 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
-        amount: 100,
         products: [],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -130,7 +126,6 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId: 999999,
-        amount: 100,
         products: [{ productId, quantity: 1 }],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -143,7 +138,6 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
-        amount: 100,
         products: [{ productId: 999999, quantity: 1 }],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -156,21 +150,7 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
-        amount: 100,
         cardLastNumbers: 'ABCD',
-        products: [{ productId, quantity: 1 }],
-      })
-      .header('Authorization', `Bearer ${token}`)
-
-    response.assertStatus(422)
-  })
-
-  test('Deve falhar ao criar transação com amount inválido', async ({ client }) => {
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId,
-        amount: -100,
         products: [{ productId, quantity: 1 }],
       })
       .header('Authorization', `Bearer ${token}`)
