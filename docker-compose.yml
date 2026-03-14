@@ -9,8 +9,15 @@ services:
       MYSQL_USER: payment_user
       MYSQL_PASSWORD: '123654'
     ports:
-      - "3306:3306"
+      - '3306:3306'
     expose:
-      - "3306"
+      - '3306'
     volumes:
       - ./data/db:/var/lib/mysql
+  gateways:
+    image: matheusprotzen/gateways-mock
+    container_name: payment_gateways
+    restart: always
+    ports:
+      - '3001:3001'
+      - '3002:3002'
