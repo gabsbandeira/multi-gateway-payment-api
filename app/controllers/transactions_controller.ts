@@ -3,6 +3,8 @@ import db from '@adonisjs/lucid/services/db'
 import Transaction from '#models/transaction'
 import Product from '#models/product'
 import { transactionIdValidator, createTransactionValidator } from '#validators/transaction'
+import Client from '#models/client'
+import { PaymentService } from '#services/payment_services'
 
 export default class TransactionsController {
   async index({ response }: HttpContext) {
@@ -56,8 +58,13 @@ export default class TransactionsController {
   }
 
   async store({ request, response }: HttpContext) {
-    const { products, ...payload } = await request.validateUsing(createTransactionValidator)
+    const { products, cardNumber, cvv, ...payload } = await request.validateUsing(
+      createTransactionValidator
+    )
+    const client = await Client.findOrFail(payload.clientId)
+    const paymentService = new PaymentService()
 
+    const cardLastNumbers = cardNumber.slice(-4)
     const productsWithPrice = await Product.findMany(products.map((p) => p.productId))
 
     const amount = products.reduce((sum, item) => {
@@ -65,12 +72,20 @@ export default class TransactionsController {
       return sum + matchedProduct.amount * item.quantity
     }, 0)
 
-    // TODO: substituir quando implementar os gateways
-    const status = 'paid' as const
+    const { externalId, gatewayId, status } = await paymentService
+      .charge({
+        amount,
+        name: client.name,
+        email: client.email,
+        cardNumber,
+        cvv,
+      })
+      .then((result) => ({ ...result, status: 'paid' as const }))
+      .catch(() => ({ externalId: null, gatewayId: null, status: 'failed' as const }))
 
     const newTransaction = await db.transaction(async (trx) => {
       const transactionRecord = await Transaction.create(
-        { ...payload, amount, status },
+        { ...payload, amount, status, cardLastNumbers, externalId, gatewayId },
         { client: trx }
       )
 
