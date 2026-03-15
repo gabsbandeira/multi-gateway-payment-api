@@ -9,9 +9,13 @@ test.group('Transactions', (group) => {
   let token: string
   let clientId: number
   let productId: number
+  let cardNumber: string
+  let cvv: string
 
   group.setup(async () => {
     token = await login()
+    cardNumber = '5569000000006063'
+    cvv = '100'
   })
 
   group.each.setup(async () => {
@@ -37,6 +41,8 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
+        cardNumber,
+        cvv,
         products: [{ productId, quantity: 1 }],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -63,6 +69,9 @@ test.group('Transactions', (group) => {
     assert.isArray(body.data.products)
     assert.equal(body.data.products[0].productId, productId)
     assert.equal(body.data.products[0].quantity, 1)
+
+    const transaction = await Transaction.findOrFail(body.data.id)
+    assert.equal(transaction.cardLastNumbers, '6063')
   })
 
   test('Deve falhar e não criar a transação quando um produto for inválido', async ({
@@ -73,6 +82,8 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
+        cardNumber,
+        cvv,
         products: [
           { productId, quantity: 1 },
           { productId: 999999, quantity: 1 },
@@ -93,9 +104,11 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
+        cardNumber,
+        cvv,
         products: [
-          { productId, quantity: 1 },
-          { productId: product2.id, quantity: 2 },
+          { productId, quantity: 3 },
+          { productId: product2.id, quantity: 4 },
         ],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -103,10 +116,14 @@ test.group('Transactions', (group) => {
     response.assertStatus(201)
 
     const body = response.body() as {
-      data: { products: Array<{ productId: number; quantity: number }> }
+      data: {
+        amount: number
+        products: Array<{ productId: number; quantity: number }>
+      }
     }
 
     assert.equal(body.data.products.length, 2)
+    assert.equal(body.data.amount, 1100)
   })
 
   test('Deve falhar ao criar transação sem produtos', async ({ client }) => {
@@ -114,6 +131,8 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
+        cardNumber,
+        cvv,
         products: [],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -126,6 +145,8 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId: 999999,
+        cardNumber,
+        cvv,
         products: [{ productId, quantity: 1 }],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -138,6 +159,8 @@ test.group('Transactions', (group) => {
       .post('/api/v1/transactions')
       .json({
         clientId,
+        cardNumber,
+        cvv,
         products: [{ productId: 999999, quantity: 1 }],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -145,12 +168,13 @@ test.group('Transactions', (group) => {
     response.assertStatus(422)
   })
 
-  test('Deve falhar ao criar transação com cardLastNumbers inválido', async ({ client }) => {
+  test('Deve falhar ao criar transação com cardNumber inválido', async ({ client }) => {
     const response = await client
       .post('/api/v1/transactions')
       .json({
         clientId,
-        cardLastNumbers: 'ABCD',
+        cardNumber: '12345678901234569999',
+        cvv,
         products: [{ productId, quantity: 1 }],
       })
       .header('Authorization', `Bearer ${token}`)
@@ -160,8 +184,8 @@ test.group('Transactions', (group) => {
 
   test('Deve listar transações com sucesso', async ({ client, assert }) => {
     await Transaction.createMany([
-      { clientId, amount: 100, status: 'paid' },
-      { clientId, amount: 200, status: 'failed' },
+      { clientId, cardLastNumbers: '1234', amount: 100, status: 'paid' },
+      { clientId, cardLastNumbers: '5678', amount: 200, status: 'paid' },
     ])
 
     const response = await client
@@ -183,6 +207,7 @@ test.group('Transactions', (group) => {
   test('Deve buscar uma transação por id com sucesso', async ({ client, assert }) => {
     const transaction = await Transaction.create({
       clientId,
+      cardLastNumbers: '1234',
       amount: 100,
       status: 'paid',
     })
@@ -226,6 +251,7 @@ test.group('Transactions', (group) => {
   test('Deve deletar uma transação com sucesso', async ({ client, assert }) => {
     const transaction = await Transaction.create({
       clientId,
+      cardLastNumbers: '1234',
       amount: 100,
       status: 'paid',
     })
