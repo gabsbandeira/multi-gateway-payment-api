@@ -22,6 +22,8 @@ export type ScannedRoutes = {
     'transactions.store': { paramsTuple?: []; params?: {} }
     'transactions.refund': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'transactions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'gateways.toggle_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'gateways.update_priority': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'clients.index': { paramsTuple?: []; params?: {} }
@@ -56,6 +58,10 @@ export type ScannedRoutes = {
     'clients.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'transactions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  PATCH: {
+    'gateways.toggle_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'gateways.update_priority': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

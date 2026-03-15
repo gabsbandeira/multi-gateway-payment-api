@@ -58,5 +58,13 @@ router
       })
       .prefix('transactions')
       .use(middleware.auth())
+
+    router
+      .group(() => {
+        router.patch('/:id/toggle', [controllers.Gateways, 'toggleStatus'])
+        router.patch('/:id/priority', [controllers.Gateways, 'updatePriority'])
+      })
+      .prefix('gateways')
+      .use(middleware.auth())
   })
   .prefix('/api/v1')

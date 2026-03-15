@@ -5,6 +5,7 @@
 
 export const controllers = {
   Clients: () => import('#controllers/clients_controller'),
+  Gateways: () => import('#controllers/gateways_controller'),
   Login: () => import('#controllers/login_controller'),
   Products: () => import('#controllers/products_controller'),
   Signup: () => import('#controllers/signup_controller'),

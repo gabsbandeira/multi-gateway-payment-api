@@ -32,4 +32,8 @@ export interface ApiDefinition {
     refund: typeof routes['transactions.refund']
     destroy: typeof routes['transactions.destroy']
   }
+  gateways: {
+    toggleStatus: typeof routes['gateways.toggle_status']
+    updatePriority: typeof routes['gateways.update_priority']
+  }
 }
