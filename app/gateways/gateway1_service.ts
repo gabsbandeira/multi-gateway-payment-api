@@ -11,6 +11,7 @@ export class Gateway1Service implements GatewayInterface {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: this.email, token: this.token }),
+      signal: AbortSignal.timeout(5000),
     })
 
     const data = (await response.json()) as { token: string }
@@ -33,6 +34,7 @@ export class Gateway1Service implements GatewayInterface {
         cardNumber: data.cardNumber,
         cvv: data.cvv,
       }),
+      signal: AbortSignal.timeout(5000),
     })
 
     if (!response.ok) throw new Error('Gateway 1 falhou')

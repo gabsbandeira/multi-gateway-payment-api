@@ -57,7 +57,11 @@ test.group('Transactions', (group) => {
         id: number
         status: string
         amount: number
-        clientId: number
+        client: {
+          id: number
+          name: string
+          email: string
+        }
         products: Array<{ productId: number; quantity: number }>
       }
     }
@@ -226,14 +230,18 @@ test.group('Transactions', (group) => {
         id: number
         status: string
         amount: number
-        clientId: number
+        client: {
+          id: number
+          name: string
+          email: string
+        }
         products: Array<{ productId: number; quantity: number }>
       }
     }
 
     assert.exists(body.data)
     assert.equal(body.data.id, transaction.id)
-    assert.equal(body.data.clientId, clientId)
+    assert.equal(body.data.client.id, clientId)
     assert.isArray(body.data.products)
   })
 

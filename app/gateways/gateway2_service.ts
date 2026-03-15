@@ -21,6 +21,7 @@ export class Gateway2Service implements GatewayInterface {
         numeroCartao: data.cardNumber,
         cvv: data.cvv,
       }),
+      signal: AbortSignal.timeout(5000),
     })
 
     if (!response.ok) throw new Error('Gateway 2 falhou')

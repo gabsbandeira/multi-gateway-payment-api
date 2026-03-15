@@ -8,14 +8,22 @@ import { PaymentService } from '#services/payment_services'
 
 export default class TransactionsController {
   async index({ response }: HttpContext) {
-    const transactions = await Transaction.all()
+    const transactions = await Transaction.query().preload('client').preload('gateway')
 
     const data = transactions.map((transaction) => ({
       id: transaction.id,
       status: transaction.status,
       amount: transaction.amount,
-      clientId: transaction.clientId,
+      externalId: transaction.externalId,
       createdAt: transaction.createdAt?.toISO(),
+      client: {
+        id: transaction.client.id,
+        name: transaction.client.name,
+        email: transaction.client.email,
+      },
+      gateway: transaction.gateway
+        ? { id: transaction.gateway.id, name: transaction.gateway.name }
+        : null,
     }))
 
     return response.ok({
@@ -31,6 +39,8 @@ export default class TransactionsController {
 
     const transaction = await Transaction.query()
       .where('id', id)
+      .preload('client')
+      .preload('gateway')
       .preload('transactionProducts')
       .first()
 
@@ -46,9 +56,17 @@ export default class TransactionsController {
         id: transaction.id,
         status: transaction.status,
         amount: transaction.amount,
+        externalId: transaction.externalId,
         cardLastNumbers: transaction.cardLastNumbers,
-        clientId: transaction.clientId,
         createdAt: transaction.createdAt?.toISO(),
+        client: {
+          id: transaction.client.id,
+          name: transaction.client.name,
+          email: transaction.client.email,
+        },
+        gateway: transaction.gateway
+          ? { id: transaction.gateway.id, name: transaction.gateway.name }
+          : null,
         products: transaction.transactionProducts.map((tp) => ({
           productId: tp.productId,
           quantity: tp.quantity,
