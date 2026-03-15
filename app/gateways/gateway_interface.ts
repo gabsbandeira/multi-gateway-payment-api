@@ -13,4 +13,5 @@ export interface ChargeResult {
 
 export interface GatewayInterface {
   charge(data: ChargeData): Promise<ChargeResult>
+  refund(externalId: string): Promise<void>
 }

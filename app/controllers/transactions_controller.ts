@@ -118,7 +118,11 @@ export default class TransactionsController {
       return transactionRecord
     })
 
-    await newTransaction.load('transactionProducts')
+    await newTransaction.load('client')
+    await newTransaction.load('gateway')
+    await newTransaction.load('transactionProducts', (query) => {
+      query.preload('product')
+    })
 
     return response.created({
       message: 'Transação criada com sucesso',
@@ -126,12 +130,67 @@ export default class TransactionsController {
         id: newTransaction.id,
         status: newTransaction.status,
         amount: newTransaction.amount,
-        clientId: newTransaction.clientId,
+        externalId: newTransaction.externalId,
+        cardLastNumbers: newTransaction.cardLastNumbers,
         createdAt: newTransaction.createdAt?.toISO(),
+        client: {
+          id: newTransaction.client.id,
+          name: newTransaction.client.name,
+          email: newTransaction.client.email,
+        },
+        gateway: newTransaction.gateway
+          ? { id: newTransaction.gateway.id, name: newTransaction.gateway.name }
+          : null,
         products: newTransaction.transactionProducts.map((tp) => ({
-          productId: tp.productId,
+          id: tp.productId,
+          name: tp.product.name,
+          amount: tp.product.amount,
           quantity: tp.quantity,
         })),
+      },
+    })
+  }
+
+  async refund({ params, request, response }: HttpContext) {
+    const { id } = await request.validateUsing(transactionIdValidator, {
+      data: params,
+    })
+
+    const transaction = await Transaction.find(id)
+
+    if (!transaction) {
+      return response.notFound({
+        message: 'Transação não encontrada',
+      })
+    }
+
+    if (transaction.status === 'refunded') {
+      return response.badRequest({
+        message: 'Transação já foi reembolsada',
+      })
+    }
+
+    if (!transaction.externalId || !transaction.gatewayId) {
+      return response.badRequest({
+        message: 'Transação não pode ser reembolsada',
+      })
+    }
+
+    const paymentService = new PaymentService()
+    await paymentService.refund(transaction.externalId, transaction.gatewayId)
+
+    transaction.status = 'refunded'
+    await transaction.save()
+
+    return response.ok({
+      message: 'Reembolso realizado com sucesso',
+      data: {
+        id: transaction.id,
+        status: transaction.status,
+        amount: transaction.amount,
+        externalId: transaction.externalId,
+        cardLastNumbers: transaction.cardLastNumbers,
+        clientId: transaction.clientId,
       },
     })
   }

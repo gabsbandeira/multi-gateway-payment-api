@@ -199,6 +199,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'transactions.refund': {
+    methods: ["POST"]
+    pattern: '/api/v1/transactions/:id/refund'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/transaction').transactionIdValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/transaction').transactionIdValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['refund']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['refund']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'transactions.destroy': {
     methods: ["DELETE"]
     pattern: '/api/v1/transactions/:id'

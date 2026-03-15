@@ -29,4 +29,19 @@ export class Gateway2Service implements GatewayInterface {
     const result = (await response.json()) as { id: string }
     return { externalId: result.id, gatewayId: 2 }
   }
+
+  async refund(externalId: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/transacoes/reembolso`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Gateway-Auth-Token': this.authToken,
+        'Gateway-Auth-Secret': this.authSecret,
+      },
+      body: JSON.stringify({ id: externalId }),
+      signal: AbortSignal.timeout(5000),
+    })
+
+    if (!response.ok) throw new Error('Reembolso falhou no Gateway 2')
+  }
 }

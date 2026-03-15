@@ -57,21 +57,25 @@ test.group('Transactions', (group) => {
         id: number
         status: string
         amount: number
+        externalId: string | null
+        cardLastNumbers: string
         client: {
           id: number
           name: string
           email: string
         }
-        products: Array<{ productId: number; quantity: number }>
+        products: Array<{ id: number; name: string; amount: number; quantity: number }>
       }
     }
 
     assert.exists(body.data)
     assert.exists(body.data.id)
-    assert.equal(body.data.clientId, clientId)
+    assert.equal(body.data.client.id, clientId)
     assert.equal(body.data.amount, 100)
     assert.isArray(body.data.products)
-    assert.equal(body.data.products[0].productId, productId)
+    assert.equal(body.data.products[0].id, productId)
+    assert.equal(body.data.products[0].name, 'Produto Teste')
+    assert.equal(body.data.products[0].amount, 100)
     assert.equal(body.data.products[0].quantity, 1)
 
     const transaction = await Transaction.findOrFail(body.data.id)
@@ -122,7 +126,7 @@ test.group('Transactions', (group) => {
     const body = response.body() as {
       data: {
         amount: number
-        products: Array<{ productId: number; quantity: number }>
+        products: Array<{ id: number; name: string; amount: number; quantity: number }>
       }
     }
 
@@ -286,5 +290,60 @@ test.group('Transactions', (group) => {
     response.assertBodyContains({
       message: 'Transação não encontrada',
     })
+  })
+
+  test('Deve fazer reembolso de uma transação com sucesso', async ({ client, assert }) => {
+    const response = await client
+      .post('/api/v1/transactions')
+      .json({
+        clientId,
+        cardNumber,
+        cvv,
+        products: [{ productId, quantity: 1 }],
+      })
+      .header('Authorization', `Bearer ${token}`)
+
+    const body = response.body() as {
+      data: {
+        id: number
+      }
+    }
+
+    const refundResponse = await client
+      .post(`/api/v1/transactions/${body.data.id}/refund`)
+      .header('Authorization', `Bearer ${token}`)
+
+    refundResponse.assertStatus(200)
+    refundResponse.assertBodyContains({
+      message: 'Reembolso realizado com sucesso',
+    })
+
+    const transaction = await Transaction.findOrFail(body.data.id)
+    assert.equal(transaction.status, 'refunded')
+  })
+
+  test('Deve falhar ao fazer reembolso de transação já reembolsada', async ({ client }) => {
+    const refundedTransaction = await Transaction.create({
+      clientId,
+      cardLastNumbers: '1234',
+      amount: 100,
+      status: 'refunded',
+    })
+
+    const response = await client
+      .post(`/api/v1/transactions/${refundedTransaction.id}/refund`)
+      .header('Authorization', `Bearer ${token}`)
+
+    response.assertStatus(400)
+    response.assertBodyContains({ message: 'Transação já foi reembolsada' })
+  })
+
+  test('Deve falhar ao fazer reembolso de transação com id inexistente', async ({ client }) => {
+    const response = await client
+      .post('/api/v1/transactions/999999/refund')
+      .header('Authorization', `Bearer ${token}`)
+
+    response.assertStatus(404)
+    response.assertBodyContains({ message: 'Transação não encontrada' })
   })
 })

@@ -23,4 +23,9 @@ export class PaymentService {
 
     throw new Error('Todos os gateways falharam')
   }
+
+  async refund(externalId: string, gatewayId: number): Promise<void> {
+    const gateway = await Gateway.findOrFail(gatewayId)
+    await this.resolveGateway(gateway.name).refund(externalId)
+  }
 }

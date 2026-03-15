@@ -53,6 +53,7 @@ router
         router.get('/', [controllers.Transactions, 'index'])
         router.get('/:id', [controllers.Transactions, 'show'])
         router.post('/', [controllers.Transactions, 'store'])
+        router.post('/:id/refund', [controllers.Transactions, 'refund'])
         router.delete('/:id', [controllers.Transactions, 'destroy'])
       })
       .prefix('transactions')

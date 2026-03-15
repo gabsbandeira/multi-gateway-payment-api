@@ -20,6 +20,7 @@ export type ScannedRoutes = {
     'transactions.index': { paramsTuple?: []; params?: {} }
     'transactions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'transactions.store': { paramsTuple?: []; params?: {} }
+    'transactions.refund': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'transactions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
@@ -45,6 +46,7 @@ export type ScannedRoutes = {
     'clients.store': { paramsTuple?: []; params?: {} }
     'products.store': { paramsTuple?: []; params?: {} }
     'transactions.store': { paramsTuple?: []; params?: {} }
+    'transactions.refund': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'clients.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

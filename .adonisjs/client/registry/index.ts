@@ -102,6 +102,12 @@ const routes = {
     tokens: [{"old":"/api/v1/transactions","type":0,"val":"api","end":""},{"old":"/api/v1/transactions","type":0,"val":"v1","end":""},{"old":"/api/v1/transactions","type":0,"val":"transactions","end":""}],
     types: placeholder as Registry['transactions.store']['types'],
   },
+  'transactions.refund': {
+    methods: ["POST"],
+    pattern: '/api/v1/transactions/:id/refund',
+    tokens: [{"old":"/api/v1/transactions/:id/refund","type":0,"val":"api","end":""},{"old":"/api/v1/transactions/:id/refund","type":0,"val":"v1","end":""},{"old":"/api/v1/transactions/:id/refund","type":0,"val":"transactions","end":""},{"old":"/api/v1/transactions/:id/refund","type":1,"val":"id","end":""},{"old":"/api/v1/transactions/:id/refund","type":0,"val":"refund","end":""}],
+    types: placeholder as Registry['transactions.refund']['types'],
+  },
   'transactions.destroy': {
     methods: ["DELETE"],
     pattern: '/api/v1/transactions/:id',
