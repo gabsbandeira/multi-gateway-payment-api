@@ -6,8 +6,8 @@ export const transactionIdValidator = vine.create({
 
 export const createTransactionValidator = vine.create({
   clientId: vine.number().positive().exists({ table: 'clients', column: 'id' }),
-  cardLastNumbers: vine.string().fixedLength(4).regex(/^\d+$/).optional(),
-  externalId: vine.string().optional(),
+  cardNumber: vine.string().fixedLength(16).regex(/^\d+$/),
+  cvv: vine.string().minLength(3).maxLength(4).regex(/^\d+$/),
   products: vine
     .array(
       vine.object({
