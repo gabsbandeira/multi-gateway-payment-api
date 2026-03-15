@@ -36,4 +36,13 @@ export default await Env.create(new URL('../', import.meta.url), {
   MYSQL_USER: Env.schema.string(),
   MYSQL_PASSWORD: Env.schema.string(),
   MYSQL_DB_NAME: Env.schema.string(),
+
+  //Gateways
+  GATEWAY1_URL: Env.schema.string(),
+  GATEWAY1_EMAIL: Env.schema.string(),
+  GATEWAY1_TOKEN: Env.schema.string(),
+
+  GATEWAY2_URL: Env.schema.string(),
+  GATEWAY2_AUTH_TOKEN: Env.schema.string(),
+  GATEWAY2_AUTH_SECRET: Env.schema.string(),
 })
