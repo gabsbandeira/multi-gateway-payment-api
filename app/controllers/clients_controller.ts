@@ -23,7 +23,14 @@ export default class ClientsController {
       data: params,
     })
 
-    const client = await Client.find(id)
+    const client = await Client.query()
+      .where('id', id)
+      .preload('transactions', (query) => {
+        query.preload('gateway').preload('transactionProducts', (tpQuery) => {
+          tpQuery.preload('product')
+        })
+      })
+      .first()
 
     if (!client) {
       return response.notFound({
@@ -37,6 +44,23 @@ export default class ClientsController {
         id: client.id,
         name: client.name,
         email: client.email,
+        transactions: client.transactions.map((transaction) => ({
+          id: transaction.id,
+          status: transaction.status,
+          amount: transaction.amount,
+          externalId: transaction.externalId,
+          cardLastNumbers: transaction.cardLastNumbers,
+          createdAt: transaction.createdAt?.toISO(),
+          gateway: transaction.gateway
+            ? { id: transaction.gateway.id, name: transaction.gateway.name }
+            : null,
+          products: transaction.transactionProducts.map((tp) => ({
+            id: tp.productId,
+            name: tp.product.name,
+            amount: tp.product.amount,
+            quantity: tp.quantity,
+          })),
+        })),
       },
     })
   }

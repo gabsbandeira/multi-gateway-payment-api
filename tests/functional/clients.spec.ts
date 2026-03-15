@@ -4,14 +4,21 @@ import User from '#models/user'
 import Client from '#models/client'
 
 test.group('Clients', (group) => {
+  let token: string
+
+  group.setup(async () => {
+    token = await login()
+  })
+
   group.each.teardown(async () => {
-    await User.query().delete()
     await Client.query().delete()
   })
 
-  test('Deve criar um cliente com sucesso', async ({ client, assert }) => {
-    const token = await login()
+  group.teardown(async () => {
+    await User.query().delete()
+  })
 
+  test('Deve criar um cliente com sucesso', async ({ client, assert }) => {
     const response = await client
       .post('/api/v1/clients')
       .json({
@@ -40,8 +47,6 @@ test.group('Clients', (group) => {
   })
 
   test('Deve falhar ao criar um cliente com email invalido', async ({ client }) => {
-    const token = await login()
-
     const response = await client
       .post('/api/v1/clients')
       .json({
@@ -54,8 +59,6 @@ test.group('Clients', (group) => {
   })
 
   test('Deve listar vários clientes', async ({ client, assert }) => {
-    const token = await login()
-
     await Client.createMany([
       { name: 'Gabi', email: 'gabi@email.com' },
       { name: 'Mimi', email: 'mimi@email.com' },
@@ -81,8 +84,6 @@ test.group('Clients', (group) => {
   })
 
   test('Deve buscar um cliente por id e retornar o cliente', async ({ client, assert }) => {
-    const token = await login()
-
     const createdClient = await Client.create({
       name: 'Cliente para Buscar',
       email: 'cliente1@email.com',
@@ -102,17 +103,21 @@ test.group('Clients', (group) => {
         id: number
         name: string
         email: string
+        transactions: Array<{
+          id: number
+          status: string
+          amount: number
+        }>
       }
     }
 
     assert.exists(body.data)
     assert.equal(body.data.id, createdClient.id)
     assert.equal(body.data.email, 'cliente1@email.com')
+    assert.isArray(body.data.transactions)
   })
 
   test('Deve falhar ao buscar um cliente por id incorreto', async ({ client }) => {
-    const token = await login()
-
     const response = await client
       .get('/api/v1/clients/9999')
       .header('Authorization', `Bearer ${token}`)
@@ -121,8 +126,6 @@ test.group('Clients', (group) => {
   })
 
   test('Deve atualizar um cliente com sucesso', async ({ client, assert }) => {
-    const token = await login()
-
     const createdClient = await Client.create({
       name: 'Cliente para Atualizar',
       email: 'cliente_atualizar@email.com',
@@ -156,8 +159,6 @@ test.group('Clients', (group) => {
   })
 
   test('Deve falhar ao atualizar um cliente com dados inválidos', async ({ client }) => {
-    const token = await login()
-
     const createdClient = await Client.create({
       name: 'Cliente para Atualizar Erro',
       email: 'cliente_atualizar_teste@email.com',
@@ -175,8 +176,6 @@ test.group('Clients', (group) => {
   })
 
   test('Deve falhar ao tentar atualizar cliente com id incorreto', async ({ client }) => {
-    const token = await login()
-
     const response = await client
       .put(`/api/v1/clients/99999`)
       .json({
@@ -192,8 +191,6 @@ test.group('Clients', (group) => {
   })
 
   test('Deve deletar um cliente com sucesso', async ({ client, assert }) => {
-    const token = await login()
-
     const createdClient = await Client.create({
       name: 'Cliente para Deletar',
       email: 'cliente_deletar@email.com',
@@ -213,8 +210,6 @@ test.group('Clients', (group) => {
   })
 
   test('Deve falhar ao tentar deletar com id incorreto', async ({ client }) => {
-    const token = await login()
-
     const response = await client
       .delete(`/api/v1/clients/999999999`)
       .header('Authorization', `Bearer ${token}`)
