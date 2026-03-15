@@ -3,7 +3,7 @@ import Product from '#models/product'
 
 export default class ProductSeeder extends BaseSeeder {
   async run() {
-    await Product.createMany([
+    await Product.updateOrCreateMany('name', [
       { name: 'Televisao', amount: 100 },
       { name: 'Geladeira', amount: 200 },
       { name: 'Microondas', amount: 300 },
