@@ -104,7 +104,7 @@ multi-gateway-payment-api/
 
 ## Autenticação
 
-Todas as rotas, exceto `signup` e `login`, exigem autenticação via **Bearer Token**.
+Todas as rotas, exceto `signup`, `login` e `POST /api/v1/transactions`, exigem autenticação via **Bearer Token**.
 
 Após o login, inclua o token no header de todas as requisições:
 
@@ -418,7 +418,9 @@ Remove um produto.
 
 ---
 
-### Transações `autenticado`
+### Transações
+
+> O `POST /api/v1/transactions` é público. As demais rotas exigem autenticação.
 
 #### GET `/api/v1/transactions`
 
@@ -623,23 +625,24 @@ Atualiza a prioridade de um gateway. Gateways com menor valor de prioridade são
 
 ## Variáveis de Ambiente
 
-| Variável               | Descrição                  | Exemplo                            |
-| ---------------------- | -------------------------- | ---------------------------------- |
-| `PORT`                 | Porta da aplicação         | `3333`                             |
-| `HOST`                 | Host da aplicação          | `localhost`                        |
-| `NODE_ENV`             | Ambiente                   | `development`                      |
-| `APP_KEY`              | Chave secreta da aplicação | gerada via `node ace generate:key` |
-| `APP_URL`              | URL base da aplicação      | `http://localhost:3333`            |
-| `SESSION_DRIVER`       | Driver de sessão           | `cookie`                           |
-| `DB_CONNECTION`        | Tipo de banco              | `mysql`                            |
-| `MYSQL_HOST`           | Host do MySQL              | `127.0.0.1`                        |
-| `MYSQL_PORT`           | Porta do MySQL             | `3306`                             |
-| `MYSQL_USER`           | Usuário do MySQL           | `payment_user`                     |
-| `MYSQL_PASSWORD`       | Senha do MySQL             | —                                  |
-| `MYSQL_DB_NAME`        | Nome do banco              | `payment_db`                       |
-| `GATEWAY1_URL`         | URL do Gateway 1           | `http://localhost:3001`            |
-| `GATEWAY1_EMAIL`       | Email do Gateway 1         | —                                  |
-| `GATEWAY1_TOKEN`       | Token do Gateway 1         | —                                  |
-| `GATEWAY2_URL`         | URL do Gateway 2           | `http://localhost:3002`            |
-| `GATEWAY2_AUTH_TOKEN`  | Token do Gateway 2         | —                                  |
-| `GATEWAY2_AUTH_SECRET` | Secret do Gateway 2        | —                                  |
+| Variável               | Descrição                  | Exemplo                                        |
+| ---------------------- | -------------------------- | ---------------------------------------------- |
+| `PORT`                 | Porta da aplicação         | `3333`                                         |
+| `HOST`                 | Host da aplicação          | `localhost`                                    |
+| `NODE_ENV`             | Ambiente                   | `development`                                  |
+| `APP_KEY`              | Chave secreta da aplicação | `base64:4Zk5DziaoJceC9hQnFlfGLIjVjCJYEv29Vlaxg/mmHY=` |
+| `APP_URL`              | URL base da aplicação      | `http://localhost:3333`                        |
+| `LOG_LEVEL`            | Nível de log               | `info`                                         |
+| `SESSION_DRIVER`       | Driver de sessão           | `cookie`                                       |
+| `DB_CONNECTION`        | Tipo de banco              | `mysql`                                        |
+| `MYSQL_HOST`           | Host do MySQL              | `127.0.0.1`                                    |
+| `MYSQL_PORT`           | Porta do MySQL             | `3306`                                         |
+| `MYSQL_USER`           | Usuário do MySQL           | `payment_user`                                 |
+| `MYSQL_PASSWORD`       | Senha do MySQL             | `123654`                                       |
+| `MYSQL_DB_NAME`        | Nome do banco              | `payment_db`                                   |
+| `GATEWAY1_URL`         | URL do Gateway 1           | `http://localhost:3001`                        |
+| `GATEWAY1_EMAIL`       | Email do Gateway 1         | `dev@betalent.tech`                            |
+| `GATEWAY1_TOKEN`       | Token do Gateway 1         | `FEC9BB078BF338F464F96B48089EB498`             |
+| `GATEWAY2_URL`         | URL do Gateway 2           | `http://localhost:3002`                        |
+| `GATEWAY2_AUTH_TOKEN`  | Token do Gateway 2         | `tk_f2198cc671b5289fa856`                      |
+| `GATEWAY2_AUTH_SECRET` | Secret do Gateway 2        | `3d15e8ed6131446ea7e3456728b1211f`             |

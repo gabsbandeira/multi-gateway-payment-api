@@ -163,6 +163,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'transactions.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/transactions'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/transaction').createTransactionValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/transaction').createTransactionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'transactions.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/transactions'
@@ -185,18 +197,6 @@ export interface Registry {
       query: ExtractQueryForGet<InferInput<(typeof import('#validators/transaction').transactionIdValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['show']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['show']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'transactions.store': {
-    methods: ["POST"]
-    pattern: '/api/v1/transactions'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/transaction').createTransactionValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#validators/transaction').createTransactionValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/transactions_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'transactions.refund': {

@@ -84,6 +84,12 @@ const routes = {
     tokens: [{"old":"/api/v1/products/:id","type":0,"val":"api","end":""},{"old":"/api/v1/products/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/products/:id","type":0,"val":"products","end":""},{"old":"/api/v1/products/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['products.destroy']['types'],
   },
+  'transactions.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/transactions',
+    tokens: [{"old":"/api/v1/transactions","type":0,"val":"api","end":""},{"old":"/api/v1/transactions","type":0,"val":"v1","end":""},{"old":"/api/v1/transactions","type":0,"val":"transactions","end":""}],
+    types: placeholder as Registry['transactions.store']['types'],
+  },
   'transactions.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/transactions',
@@ -95,12 +101,6 @@ const routes = {
     pattern: '/api/v1/transactions/:id',
     tokens: [{"old":"/api/v1/transactions/:id","type":0,"val":"api","end":""},{"old":"/api/v1/transactions/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/transactions/:id","type":0,"val":"transactions","end":""},{"old":"/api/v1/transactions/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['transactions.show']['types'],
-  },
-  'transactions.store': {
-    methods: ["POST"],
-    pattern: '/api/v1/transactions',
-    tokens: [{"old":"/api/v1/transactions","type":0,"val":"api","end":""},{"old":"/api/v1/transactions","type":0,"val":"v1","end":""},{"old":"/api/v1/transactions","type":0,"val":"transactions","end":""}],
-    types: placeholder as Registry['transactions.store']['types'],
   },
   'transactions.refund': {
     methods: ["POST"],

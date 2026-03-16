@@ -37,15 +37,12 @@ test.group('Transactions', (group) => {
   })
 
   test('Deve criar uma transação com sucesso', async ({ client, assert }) => {
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId,
-        cardNumber,
-        cvv,
-        products: [{ productId, quantity: 1 }],
-      })
-      .header('Authorization', `Bearer ${token}`)
+    const response = await client.post('/api/v1/transactions').json({
+      clientId,
+      cardNumber,
+      cvv,
+      products: [{ productId, quantity: 1 }],
+    })
 
     response.assertStatus(201)
     response.assertBodyContains({
@@ -86,18 +83,15 @@ test.group('Transactions', (group) => {
     client,
     assert,
   }) => {
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId,
-        cardNumber,
-        cvv,
-        products: [
-          { productId, quantity: 1 },
-          { productId: 999999, quantity: 1 },
-        ],
-      })
-      .header('Authorization', `Bearer ${token}`)
+    const response = await client.post('/api/v1/transactions').json({
+      clientId,
+      cardNumber,
+      cvv,
+      products: [
+        { productId, quantity: 1 },
+        { productId: 999999, quantity: 1 },
+      ],
+    })
 
     response.assertStatus(422)
 
@@ -108,18 +102,15 @@ test.group('Transactions', (group) => {
   test('Deve criar uma transação com múltiplos produtos', async ({ client, assert }) => {
     const product2 = await Product.create({ name: 'Produto 2', amount: 200 })
 
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId,
-        cardNumber,
-        cvv,
-        products: [
-          { productId, quantity: 3 },
-          { productId: product2.id, quantity: 4 },
-        ],
-      })
-      .header('Authorization', `Bearer ${token}`)
+    const response = await client.post('/api/v1/transactions').json({
+      clientId,
+      cardNumber,
+      cvv,
+      products: [
+        { productId, quantity: 3 },
+        { productId: product2.id, quantity: 4 },
+      ],
+    })
 
     response.assertStatus(201)
 
@@ -135,57 +126,45 @@ test.group('Transactions', (group) => {
   })
 
   test('Deve falhar ao criar transação sem produtos', async ({ client }) => {
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId,
-        cardNumber,
-        cvv,
-        products: [],
-      })
-      .header('Authorization', `Bearer ${token}`)
+    const response = await client.post('/api/v1/transactions').json({
+      clientId,
+      cardNumber,
+      cvv,
+      products: [],
+    })
 
     response.assertStatus(422)
   })
 
   test('Deve falhar ao criar transação com clientId inexistente', async ({ client }) => {
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId: 999999,
-        cardNumber,
-        cvv,
-        products: [{ productId, quantity: 1 }],
-      })
-      .header('Authorization', `Bearer ${token}`)
+    const response = await client.post('/api/v1/transactions').json({
+      clientId: 999999,
+      cardNumber,
+      cvv,
+      products: [{ productId, quantity: 1 }],
+    })
 
     response.assertStatus(422)
   })
 
   test('Deve falhar ao criar transação com productId inexistente', async ({ client }) => {
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId,
-        cardNumber,
-        cvv,
-        products: [{ productId: 999999, quantity: 1 }],
-      })
-      .header('Authorization', `Bearer ${token}`)
+    const response = await client.post('/api/v1/transactions').json({
+      clientId,
+      cardNumber,
+      cvv,
+      products: [{ productId: 999999, quantity: 1 }],
+    })
 
     response.assertStatus(422)
   })
 
   test('Deve falhar ao criar transação com cardNumber inválido', async ({ client }) => {
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId,
-        cardNumber: '12345678901234569999',
-        cvv,
-        products: [{ productId, quantity: 1 }],
-      })
-      .header('Authorization', `Bearer ${token}`)
+    const response = await client.post('/api/v1/transactions').json({
+      clientId,
+      cardNumber: '12345678901234569999',
+      cvv,
+      products: [{ productId, quantity: 1 }],
+    })
 
     response.assertStatus(422)
   })
@@ -293,15 +272,12 @@ test.group('Transactions', (group) => {
   })
 
   test('Deve fazer reembolso de uma transação com sucesso', async ({ client, assert }) => {
-    const response = await client
-      .post('/api/v1/transactions')
-      .json({
-        clientId,
-        cardNumber,
-        cvv,
-        products: [{ productId, quantity: 1 }],
-      })
-      .header('Authorization', `Bearer ${token}`)
+    const response = await client.post('/api/v1/transactions').json({
+      clientId,
+      cardNumber,
+      cvv,
+      products: [{ productId, quantity: 1 }],
+    })
 
     const body = response.body() as {
       data: {

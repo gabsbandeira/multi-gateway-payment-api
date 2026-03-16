@@ -17,13 +17,22 @@ export type ScannedRoutes = {
     'products.store': { paramsTuple?: []; params?: {} }
     'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'transactions.store': { paramsTuple?: []; params?: {} }
     'transactions.index': { paramsTuple?: []; params?: {} }
     'transactions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'transactions.store': { paramsTuple?: []; params?: {} }
     'transactions.refund': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'transactions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'gateways.toggle_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'gateways.update_priority': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  POST: {
+    'auth.signup.store': { paramsTuple?: []; params?: {} }
+    'auth.login.store': { paramsTuple?: []; params?: {} }
+    'auth.login.destroy': { paramsTuple?: []; params?: {} }
+    'clients.store': { paramsTuple?: []; params?: {} }
+    'products.store': { paramsTuple?: []; params?: {} }
+    'transactions.store': { paramsTuple?: []; params?: {} }
+    'transactions.refund': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'clients.index': { paramsTuple?: []; params?: {} }
@@ -40,15 +49,6 @@ export type ScannedRoutes = {
     'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'transactions.index': { paramsTuple?: []; params?: {} }
     'transactions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
-  POST: {
-    'auth.signup.store': { paramsTuple?: []; params?: {} }
-    'auth.login.store': { paramsTuple?: []; params?: {} }
-    'auth.login.destroy': { paramsTuple?: []; params?: {} }
-    'clients.store': { paramsTuple?: []; params?: {} }
-    'products.store': { paramsTuple?: []; params?: {} }
-    'transactions.store': { paramsTuple?: []; params?: {} }
-    'transactions.refund': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'clients.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
