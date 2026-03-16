@@ -623,26 +623,59 @@ Atualiza a prioridade de um gateway. Gateways com menor valor de prioridade são
 
 ---
 
+## O que foi implementado
+
+- API RESTful completa com autenticação via Bearer Token
+- CRUD de clientes, produtos e transações
+- Processamento de pagamentos com dois gateways e fallback automático
+- Reembolso de transações junto ao gateway
+- Gerenciamento de gateways (ativar/desativar e alterar prioridade)
+- Cálculo do valor total da transação a partir dos produtos e quantidades no back-end
+- Testes funcionais cobrindo os principais fluxos
+- Docker Compose com MySQL, aplicação e mock dos gateways
+
+## O que ficou pendente
+
+- Sistema de roles de usuários (ADMIN, MANAGER, FINANCE, USER)
+- CRUD de usuários com validação por roles
+- TDD completo — implementei testes funcionais, mas não segui o fluxo do TDD. Foquei em entregar o Nível 2 e fui adicionando pontos do Nível 3 conforme ia terminando os pontos do nivel 2.
+
+---
+
+## Dificuldades encontradas
+
+A parte que mais me deu trabalho foi estruturar o `PaymentService` de um jeito que fosse fácil adicionar novos gateways no futuro sem precisar mexer na lógica de fallback. Junto a isso, cada gateway tem uma forma diferente de autenticação — o Gateway1 precisa fazer login antes de cada requisição pra obter um Bearer Token, enquanto o Gateway2 usa headers fixos — o que me obrigou a criar adapters distintos pra cada um.
+
+Também tive que garantir que se algo desse errado ao salvar os produtos da transação, o registro da transação inteira fosse desfeito, o que me levou a usar o `db.transaction` — e aí tive que tomar cuidado com os nomes das variáveis pra não confundir a transação do banco com a transação de pagamento do cliente.
+
+A configuração do Dockerfile também deu bastante trabalho — mesmo seguindo a documentação, tive muitos erros até conseguir fazer o build funcionar, principalmente por causa dos múltiplos estágios de build e da compatibilidade dos módulos com o AdonisJS.
+
+O tempo também foi um desafio — foquei em entregar o Nível 2 e peguei alguns pontos do Nível 3, mas o prazo apertou mais do que planejei e não deu pra fechar tudo que queria.
+
+Utilizei IA como ferramenta de apoio durante o desenvolvimento, principalmente para tirar dúvidas pontuais e revisar decisões técnicas.
+
+---
+
 ## Variáveis de Ambiente
 
-| Variável               | Descrição                  | Exemplo                                        |
-| ---------------------- | -------------------------- | ---------------------------------------------- |
-| `PORT`                 | Porta da aplicação         | `3333`                                         |
-| `HOST`                 | Host da aplicação          | `localhost`                                    |
-| `NODE_ENV`             | Ambiente                   | `development`                                  |
+| Variável               | Descrição                  | Exemplo                                               |
+| ---------------------- | -------------------------- | ----------------------------------------------------- |
+| `PORT`                 | Porta da aplicação         | `3333`                                                |
+| `HOST`                 | Host da aplicação          | `localhost`                                           |
+| `NODE_ENV`             | Ambiente                   | `development`                                         |
 | `APP_KEY`              | Chave secreta da aplicação | `base64:4Zk5DziaoJceC9hQnFlfGLIjVjCJYEv29Vlaxg/mmHY=` |
-| `APP_URL`              | URL base da aplicação      | `http://localhost:3333`                        |
-| `LOG_LEVEL`            | Nível de log               | `info`                                         |
-| `SESSION_DRIVER`       | Driver de sessão           | `cookie`                                       |
-| `DB_CONNECTION`        | Tipo de banco              | `mysql`                                        |
-| `MYSQL_HOST`           | Host do MySQL              | `127.0.0.1`                                    |
-| `MYSQL_PORT`           | Porta do MySQL             | `3306`                                         |
-| `MYSQL_USER`           | Usuário do MySQL           | `payment_user`                                 |
-| `MYSQL_PASSWORD`       | Senha do MySQL             | `123654`                                       |
-| `MYSQL_DB_NAME`        | Nome do banco              | `payment_db`                                   |
-| `GATEWAY1_URL`         | URL do Gateway 1           | `http://localhost:3001`                        |
-| `GATEWAY1_EMAIL`       | Email do Gateway 1         | `dev@betalent.tech`                            |
-| `GATEWAY1_TOKEN`       | Token do Gateway 1         | `FEC9BB078BF338F464F96B48089EB498`             |
-| `GATEWAY2_URL`         | URL do Gateway 2           | `http://localhost:3002`                        |
-| `GATEWAY2_AUTH_TOKEN`  | Token do Gateway 2         | `tk_f2198cc671b5289fa856`                      |
-| `GATEWAY2_AUTH_SECRET` | Secret do Gateway 2        | `3d15e8ed6131446ea7e3456728b1211f`             |
+| `APP_URL`              | URL base da aplicação      | `http://localhost:3333`                               |
+| `LOG_LEVEL`            | Nível de log               | `info`                                                |
+| `SESSION_DRIVER`       | Driver de sessão           | `cookie`                                              |
+| `DB_CONNECTION`        | Tipo de banco              | `mysql`                                               |
+| `MYSQL_HOST`           | Host do MySQL              | `127.0.0.1`                                           |
+| `MYSQL_PORT`           | Porta do MySQL             | `3306`                                                |
+| `MYSQL_USER`           | Usuário do MySQL           | `payment_user`                                        |
+| `MYSQL_PASSWORD`       | Senha do MySQL             | `123654`                                              |
+| `MYSQL_DB_NAME`        | Nome do banco              | `payment_db`                                          |
+| `GATEWAY1_URL`         | URL do Gateway 1           | `http://localhost:3001`                               |
+| `GATEWAY1_EMAIL`       | Email do Gateway 1         | `dev@betalent.tech`                                   |
+| `GATEWAY1_TOKEN`       | Token do Gateway 1         | `FEC9BB078BF338F464F96B48089EB498`                    |
+| `GATEWAY2_URL`         | URL do Gateway 2           | `http://localhost:3002`                               |
+| `GATEWAY2_AUTH_TOKEN`  | Token do Gateway 2         | `tk_f2198cc671b5289fa856`                             |
+| `GATEWAY2_AUTH_SECRET` | Secret do Gateway 2        | `3d15e8ed6131446ea7e3456728b1211f`                    |
